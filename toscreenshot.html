@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>转账截图</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            width: 100%;
+            max-width: 80%;
+            margin: 0 auto;
+        }
+        
+        .card-header {
+            display: flex;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            font-weight: 500;
+            color: #333;
+            background-color: #dfdede95;
+        }
+        
+        .card-content {
+            padding: 15px;
+        }
+        
+        .transfer-row {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+        }
+        
+        .transfer-cell {
+            flex: 1;
+            padding: 0 10px;
+        }
+        
+        .transfer-cell:first-child {
+            flex: 2;
+        }
+        
+        .success-icon {
+            display: inline-block;
+            width: 11px;
+            height: 11px;
+            border-radius: 50%;
+            background-color: #0d8a61;
+            margin-right: 5px;
+        }
+        
+        .success-text {
+            color: #000000;
+        }
+        
+        .customer-id {
+            font-size: 14px;
+            color: #888;
+            margin-top: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="card" id="to_screenshot">
+        <div class="card-header">
+            <div class="transfer-cell">{type}账户</div>
+            <div class="transfer-cell">{type}预付(元)</div>
+            <div class="transfer-cell">{type}授信(元)</div>
+            <div class="transfer-cell">转账结果</div>
+            <div class="transfer-cell">完成时间</div>
+        </div>
+        <div class="card-content">
+            <div class="transfer-row">
+                <div class="transfer-cell">
+                    <div>{account}</div>
+                    <div class="customer-id">ID:{id}</div>
+                </div>
+                <div class="transfer-cell">{amount}</div>
+                <div class="transfer-cell">0.00</div>
+                <div class="transfer-cell">
+                    <span class="success-icon"></span>
+                    <span class="success-text">转账成功</span>
+                </div>
+                <div class="transfer-cell">{ctime}</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 解析URL参数
+        function getUrlParams() {
+            const params = {};
+            const queryString = window.location.search.substring(1);
+            const pairs = queryString.split('&');
+            
+            for (const pair of pairs) {
+                if (pair === '') continue;
+                const parts = pair.split('=');
+                params[decodeURIComponent(parts[0])] = decodeURIComponent(parts[1] || '');
+            }
+            
+            return params;
+        }
+
+        // 替换页面中的{xx}格式内容
+        function replaceTemplateContent() {
+            const params = getUrlParams();
+            const content = document.getElementById('to_screenshot').innerHTML;
+            
+            let newContent = content;
+            for (const key in params) {
+                const regex = new RegExp(`\\{${key}\\}`, 'g');
+                newContent = newContent.replace(regex, params[key]);
+            }
+            
+            document.getElementById('to_screenshot').innerHTML = newContent;
+        }
+
+        // 页面加载完成后执行替换
+        window.onload = function() {
+            replaceTemplateContent();
+        };
+    </script>
+</body>
+</html>
